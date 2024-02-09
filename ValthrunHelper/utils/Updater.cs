@@ -11,7 +11,6 @@ namespace ValthrunHelper.utils
     {
         private static readonly string apiUrl = "https://api.github.com/repos/silentesc/ValthrunHelper/releases/latest";
         private static readonly string valthrunHelperUrl = "https://github.com/silentesc/ValthrunHelperFiles/releases/latest/download/ValthrunHelper.exe";
-        private static readonly string valthrunHelperFileName = "ValthrunHelper.exe";
 
         public static async Task<bool> UpdateAvailableAsync(TextBlock textBlock)
         {
@@ -19,15 +18,15 @@ namespace ValthrunHelper.utils
             string? currentVersion = GetCurrentVersion();
             if (currentVersion == null)
             {
-                MainWindow.Log(textBlock, "currentVersion is null");
+                MainWindow.Log(textBlock, "Checking versions failed - currentVersion is null");
                 return false;
             }
 
             // Get repo version
-            string? repoVersion = await GetRepoVersionAsync();
+            string? repoVersion = await GetRepoVersion();
             if (repoVersion == null)
             {
-                MainWindow.Log(textBlock, "repoVersion is null");
+                MainWindow.Log(textBlock, "Checking versions failed - repoVersion is null");
                 return false;
             }
 
@@ -38,20 +37,25 @@ namespace ValthrunHelper.utils
         {
             try
             {
-                // Close current application
-                Process.GetCurrentProcess().Kill();
-
-                // Delete old exe
-                if (File.Exists(valthrunHelperFileName))
+                // Get repo version
+                string? repoVersion = await GetRepoVersion();
+                if (repoVersion == null)
                 {
-                    File.Delete(valthrunHelperFileName);
+                    MainWindow.Log(textBlock, "Update failed - repoVersion is null");
+                    return;
                 }
 
-                // Download the new file
-                await FileUtils.DownloadFile(textBlock, valthrunHelperUrl, "");
+                string newValthrunHelperFileName = "ValthrunHelper " + repoVersion + ".exe";
 
-                // Restart the application
-                Process.Start(valthrunHelperFileName);
+                // Download the new file
+                MainWindow.Log(textBlock, "Downloading new version of ValthrunHelper");
+                await FileUtils.DownloadFile(textBlock, valthrunHelperUrl, newValthrunHelperFileName);
+
+                // Start the new version
+                Process.Start(newValthrunHelperFileName);
+
+                // Kill current process
+                Process.GetCurrentProcess().Kill();
             }
             catch (Exception e)
             {
@@ -73,7 +77,7 @@ namespace ValthrunHelper.utils
             return version.ToString();
         }
 
-        private static async Task<string?> GetRepoVersionAsync()
+        private static async Task<string?> GetRepoVersion()
         {
             HttpClient httpClient = new();
             httpClient.DefaultRequestHeaders.UserAgent.ParseAdd("C# Auto Updater");

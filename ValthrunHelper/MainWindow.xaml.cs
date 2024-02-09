@@ -48,8 +48,6 @@ namespace ValthrunHelper
                 return;
             }
 
-            return;
-
             // Wait for AntiCheat closing
             CheatUtils.WaitForAntiCheatClosing(textBlock, antiCheatProcesses);
 
