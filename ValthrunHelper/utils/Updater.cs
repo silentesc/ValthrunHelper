@@ -60,7 +60,7 @@ namespace ValthrunHelper.utils
             }
         }
 
-        public static void DeleteOldFiles()
+        public static void DeleteOldFiles(TextBlock textBlock)
         {
             int currentProcessId = Environment.ProcessId;
             Process[] valthrunHelperProcesses = Process.GetProcessesByName("ValthrunHelper");
@@ -77,12 +77,19 @@ namespace ValthrunHelper.utils
                 // Kill process
                 process.Kill();
 
+                // Wait for process to be killed
+                Thread.Sleep(100);
+
                 // Try to delete the file if exists
                 try
                 {
                     if (File.Exists(module.FileName)) File.Delete(module.FileName);
+
                 }
-                catch { }
+                catch (Exception e)
+                {
+                    MainWindow.Log(textBlock, "Error while deleting old file " + e);
+                }
             }
         }
 

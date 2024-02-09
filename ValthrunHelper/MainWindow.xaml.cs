@@ -42,7 +42,7 @@ namespace ValthrunHelper
             Process cs2Process;
 
             // Check for old Valthrun processes to kill
-            Updater.DeleteOldFiles();
+            Updater.DeleteOldFiles(textBlock);
 
             // Check for update
             if (await Updater.UpdateAvailableAsync(textBlock))
