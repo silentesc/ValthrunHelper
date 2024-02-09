@@ -6,7 +6,7 @@ namespace ValthrunHelper.utils
 {
     internal class FileUtils
     {
-        public static async Task DownloadFile(TextBlock outputTextBlock, string url, string destinationPath)
+        public static async Task DownloadFileAsync(TextBlock outputTextBlock, string url, string destinationPath)
         {
             HttpClient httpClient = new();
             HttpResponseMessage response = await httpClient.GetAsync(url);

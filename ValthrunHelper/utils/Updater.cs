@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.IO;
 using System.Net.Http;
 using System.Reflection;
 using System.Text.Json;
@@ -32,7 +33,7 @@ namespace ValthrunHelper.utils
             return !currentVersion.Equals(repoVersion);
         }
 
-        public static async Task Update(TextBlock textBlock)
+        public static async Task UpdateAsync(TextBlock textBlock)
         {
             try
             {
@@ -48,17 +49,40 @@ namespace ValthrunHelper.utils
 
                 // Download the new file
                 MainWindow.Log(textBlock, "Downloading new version of ValthrunHelper");
-                await FileUtils.DownloadFile(textBlock, valthrunHelperUrl, newValthrunHelperFileName);
+                await FileUtils.DownloadFileAsync(textBlock, valthrunHelperUrl, newValthrunHelperFileName);
 
                 // Start the new version
                 Process.Start(newValthrunHelperFileName);
-
-                // Kill current process
-                Process.GetCurrentProcess().Kill();
             }
             catch (Exception e)
             {
                 MainWindow.Log(textBlock, "Error updating and restarting application: " + e.Message);
+            }
+        }
+
+        public static void DeleteOldFiles()
+        {
+            int currentProcessId = Environment.ProcessId;
+            Process[] valthrunHelperProcesses = Process.GetProcessesByName("ValthrunHelper");
+
+            foreach (Process process in valthrunHelperProcesses)
+            {
+                // Continue if process is current process
+                if (process.Id == currentProcessId) continue;
+
+                // Get process file
+                ProcessModule? module = process.MainModule;
+                if (module == null) continue;
+
+                // Kill process
+                process.Kill();
+
+                // Try to delete the file if exists
+                try
+                {
+                    if (File.Exists(module.FileName)) File.Delete(module.FileName);
+                }
+                catch { }
             }
         }
 
@@ -94,7 +118,6 @@ namespace ValthrunHelper.utils
 
             return responseJson.tag_name;
         }
-
         private class GitHubRelease
         {
             public string? tag_name { get; set; }
