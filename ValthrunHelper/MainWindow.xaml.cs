@@ -42,17 +42,19 @@ namespace ValthrunHelper
             Process cs2Process;
 
             // Check for update
-            if (await Updater.UpdateAvailableAsync())
+            if (await Updater.UpdateAvailableAsync(textBlock))
             {
-                Updater.Update();
+                await Updater.Update(textBlock);
                 return;
             }
+
+            return;
 
             // Wait for AntiCheat closing
             CheatUtils.WaitForAntiCheatClosing(textBlock, antiCheatProcesses);
 
             // Download files if they don't exist
-            CheatUtils.CheckOrDownloadFiles(textBlock);
+            await CheatUtils.CheckOrDownloadFiles(textBlock);
 
             // Wait for cs2 to start and get cs2Process
             Log(textBlock, "Waiting for cs2 to start...");

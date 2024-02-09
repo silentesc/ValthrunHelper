@@ -44,7 +44,7 @@ namespace ValthrunHelper.utils
             }
         }
 
-        public static void CheckOrDownloadFiles(TextBlock outputTextBlock)
+        public static async Task CheckOrDownloadFiles(TextBlock outputTextBlock)
         {
             if (!Directory.Exists(filesPath))
             {
@@ -55,35 +55,35 @@ namespace ValthrunHelper.utils
             if (!File.Exists(kdmapperPath))
             {
                 MainWindow.Log(outputTextBlock, "Downloading kdmapper.exe");
-                FileUtils.DownloadFile(outputTextBlock, kdmapperURL, kdmapperPath);
+                await FileUtils.DownloadFile(outputTextBlock, kdmapperURL, kdmapperPath);
             }
 
             // Download controller.exe if doesn't exist
             if (!File.Exists(controllerPath))
             {
                 MainWindow.Log(outputTextBlock, "Downloading controller.exe");
-                FileUtils.DownloadFile(outputTextBlock, controllerURL, controllerPath);
+                await FileUtils.DownloadFile(outputTextBlock, controllerURL, controllerPath);
             }
 
             // Download valthrun-driver.sys if doesn't exist
             if (!File.Exists(valthrunDriverPath))
             {
                 MainWindow.Log(outputTextBlock, "Downloading valthrun-driver.sys");
-                FileUtils.DownloadFile(outputTextBlock, valthrunDriverURL, valthrunDriverPath);
+                await FileUtils.DownloadFile(outputTextBlock, valthrunDriverURL, valthrunDriverPath);
             }
 
             // Download vulkan-1.dll if doesn't exist
             if (!File.Exists(vulkan1Path))
             {
                 MainWindow.Log(outputTextBlock, "Downloading vulkan-1.dll");
-                FileUtils.DownloadFile(outputTextBlock, vulkan1URL, vulkan1Path);
+                await FileUtils.DownloadFile(outputTextBlock, vulkan1URL, vulkan1Path);
             }
 
             // Download config.yaml if doesn't exist
             if (!File.Exists(configPath))
             {
                 MainWindow.Log(outputTextBlock, "Downloading config.yaml");
-                FileUtils.DownloadFile(outputTextBlock, configURL, configPath);
+                await FileUtils.DownloadFile(outputTextBlock, configURL, configPath);
             }
         }
 

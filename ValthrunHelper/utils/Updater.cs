@@ -9,42 +9,53 @@ namespace ValthrunHelper.utils
 {
     internal class Updater
     {
-        private static readonly string apiUrl = "https://api.github.com/repos/silentesc/ValthrunHelperFiles/releases/latest";
+        private static readonly string apiUrl = "https://api.github.com/repos/silentesc/ValthrunHelper/releases/latest";
+        private static readonly string valthrunHelperUrl = "https://github.com/silentesc/ValthrunHelperFiles/releases/latest/download/ValthrunHelper.exe";
+        private static readonly string valthrunHelperFileName = "ValthrunHelper.exe";
 
-        public static async Task<bool> UpdateAvailableAsync()
+        public static async Task<bool> UpdateAvailableAsync(TextBlock textBlock)
         {
             // Get current version
             string? currentVersion = GetCurrentVersion();
-            if (currentVersion == null) return false;
+            if (currentVersion == null)
+            {
+                MainWindow.Log(textBlock, "currentVersion is null");
+                return false;
+            }
 
             // Get repo version
             string? repoVersion = await GetRepoVersionAsync();
-            if (repoVersion == null) return false;
+            if (repoVersion == null)
+            {
+                MainWindow.Log(textBlock, "repoVersion is null");
+                return false;
+            }
 
             return !currentVersion.Equals(repoVersion);
         }
 
-        public static void Update(TextBlock textBlock)
+        public static async Task Update(TextBlock textBlock)
         {
             try
             {
                 // Close current application
                 Process.GetCurrentProcess().Kill();
 
-                // Delete old application files
-                if (Directory.Exists(installationPath))
+                // Delete old exe
+                if (File.Exists(valthrunHelperFileName))
                 {
-                    Directory.Delete(installationPath, true);
+                    File.Delete(valthrunHelperFileName);
                 }
 
-                FileUtils.DownloadFile(textBlock, );
+                // Download the new file
+                await FileUtils.DownloadFile(textBlock, valthrunHelperUrl, "");
 
                 // Restart the application
-                Process.Start(Path.Combine(installationPath, "YourApplication.exe"));
+                Process.Start(valthrunHelperFileName);
             }
-            catch (Exception ex)
+            catch (Exception e)
             {
-                Console.WriteLine("Error updating and restarting application: " + ex.Message);
+                MainWindow.Log(textBlock, "Error updating and restarting application: " + e.Message);
             }
         }
 
