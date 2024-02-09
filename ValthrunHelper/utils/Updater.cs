@@ -1,5 +1,4 @@
 ﻿using System.Diagnostics;
-using System.IO;
 using System.Net.Http;
 using System.Reflection;
 using System.Text.Json;
@@ -10,7 +9,7 @@ namespace ValthrunHelper.utils
     internal class Updater
     {
         private static readonly string apiUrl = "https://api.github.com/repos/silentesc/ValthrunHelper/releases/latest";
-        private static readonly string valthrunHelperUrl = "https://github.com/silentesc/ValthrunHelperFiles/releases/latest/download/ValthrunHelper.exe";
+        private static readonly string valthrunHelperUrl = "https://github.com/silentesc/ValthrunHelper/releases/latest/download/ValthrunHelper.exe";
 
         public static async Task<bool> UpdateAvailableAsync(TextBlock textBlock)
         {
