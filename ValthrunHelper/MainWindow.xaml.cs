@@ -20,8 +20,10 @@ namespace ValthrunHelper
         {
             loggingTextBlock = OutputTextBlock;
 
-            Thread thread = new(() => StartProcessAsync());
-            thread.IsBackground = true;
+            Thread thread = new(StartProcessAsync)
+            {
+                IsBackground = true
+            };
             thread.Start();
         }
 
