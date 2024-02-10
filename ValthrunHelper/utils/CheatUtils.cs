@@ -130,6 +130,9 @@ namespace ValthrunHelper.utils
             driverProcess.Start();
             driverProcess.WaitForExit();
 
+            // Wait before starting controller
+            Thread.Sleep(500);
+
             // Load controller
             ProcessStartInfo controllerProcessStartInfo = new()
             {
