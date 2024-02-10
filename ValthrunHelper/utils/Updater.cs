@@ -1,10 +1,8 @@
-﻿using System;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.IO;
 using System.Net.Http;
 using System.Reflection;
 using System.Text.Json;
-using System.Windows.Controls;
 
 namespace ValthrunHelper.utils
 {
@@ -14,13 +12,13 @@ namespace ValthrunHelper.utils
         private static readonly string valthrunHelperUrl = "https://github.com/silentesc/ValthrunHelper/releases/latest/download/ValthrunHelper.exe";
         private static string? lastCheckedRepoVersion = null;
 
-        public static async Task<bool> UpdateAvailableAsync(TextBlock textBlock)
+        public static async Task<bool> UpdateAvailableAsync()
         {
             // Get current version
             string? currentVersion = GetCurrentVersion();
             if (currentVersion == null)
             {
-                MainWindow.Log(textBlock, "Checking versions failed - currentVersion is null");
+                MainWindow.Log("Checking versions failed - currentVersion is null");
                 return false;
             }
 
@@ -28,14 +26,14 @@ namespace ValthrunHelper.utils
             string? repoVersion = await GetRepoVersion();
             if (repoVersion == null)
             {
-                MainWindow.Log(textBlock, "Checking versions failed - repoVersion is null");
+                MainWindow.Log("Checking versions failed - repoVersion is null");
                 return false;
             }
 
             return !currentVersion.Equals(repoVersion);
         }
 
-        public static async Task UpdateAsync(TextBlock textBlock)
+        public static async Task UpdateAsync()
         {
             try
             {
@@ -44,26 +42,26 @@ namespace ValthrunHelper.utils
                 string? repoVersion = lastCheckedRepoVersion ?? await GetRepoVersion();
                 if (repoVersion == null)
                 {
-                    MainWindow.Log(textBlock, "Update failed - repoVersion is null");
+                    MainWindow.Log("Update failed - repoVersion is null");
                     return;
                 }
 
                 string newValthrunHelperFileName = "ValthrunHelper " + repoVersion + ".exe";
 
                 // Download the new file
-                MainWindow.Log(textBlock, "Downloading new version of ValthrunHelper");
-                await FileUtils.DownloadFileAsync(textBlock, valthrunHelperUrl, newValthrunHelperFileName);
+                MainWindow.Log("Downloading new version of ValthrunHelper");
+                await FileUtils.DownloadFileAsync(valthrunHelperUrl, newValthrunHelperFileName);
 
                 // Start the new version
                 Process.Start(newValthrunHelperFileName);
             }
             catch (Exception e)
             {
-                MainWindow.Log(textBlock, "Error updating and restarting application: " + e.Message);
+                MainWindow.Log("Error updating and restarting application: " + e.Message);
             }
         }
 
-        public static void DeleteOldFiles(TextBlock textBlock)
+        public static void DeleteOldFiles()
         {
             // Get current process and filename of current process
             Process currentProcess = Process.GetCurrentProcess();
@@ -102,7 +100,7 @@ namespace ValthrunHelper.utils
                 }
                 catch (Exception e)
                 {
-                    MainWindow.Log(textBlock, "Error while deleting old file " + e);
+                    MainWindow.Log("Error while deleting old file " + e);
                 }
             }
         }

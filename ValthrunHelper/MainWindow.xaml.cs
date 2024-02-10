@@ -7,6 +7,8 @@ namespace ValthrunHelper
 {
     public partial class MainWindow : Window
     {
+        private static TextBlock? loggingTextBlock;
+
         public MainWindow()
         {
             InitializeComponent();
@@ -16,12 +18,14 @@ namespace ValthrunHelper
 
         private void Run(object sender, RoutedEventArgs e)
         {
-            Thread thread = new(() => StartProcessAsync(OutputTextBlock));
+            loggingTextBlock = OutputTextBlock;
+
+            Thread thread = new(() => StartProcessAsync());
             thread.IsBackground = true;
             thread.Start();
         }
 
-        private async void StartProcessAsync(TextBlock textBlock)
+        private async void StartProcessAsync()
         {
             string[] antiCheatProcesses = [
                 // Riot
@@ -42,28 +46,28 @@ namespace ValthrunHelper
             Process cs2Process;
 
             // Check for update
-            if (await Updater.UpdateAvailableAsync(textBlock))
+            if (await Updater.UpdateAvailableAsync())
             {
-                await Updater.UpdateAsync(textBlock);
-                Log(textBlock, "Downloaded update, waiting for being deleted.");
+                await Updater.UpdateAsync();
+                Log("Downloaded update, waiting for being deleted (Don't close me)");
                 return;
             }
 
             // Check for old Valthrun processes to kill
-            Updater.DeleteOldFiles(textBlock);
+            Updater.DeleteOldFiles();
 
             // Wait for AntiCheat closing
-            CheatUtils.WaitForAntiCheatClosing(textBlock, antiCheatProcesses);
+            CheatUtils.WaitForAntiCheatClosing(antiCheatProcesses);
 
             // Download files if they don't exist
-            await CheatUtils.CheckOrDownloadFilesAsync(textBlock);
+            await CheatUtils.CheckOrDownloadFilesAsync();
 
             // Wait for cs2 to start and get cs2Process
-            Log(textBlock, "Waiting for cs2 to start...");
+            Log("Waiting for cs2 to start...");
             cs2Process = CheatUtils.WaitForCs2Process(cs2ProcessName);
 
             // Start cheat
-            Log(textBlock, "Starting cheat");
+            Log("Starting cheat");
             Process controllerProcess = CheatUtils.StartCheat();
 
             // Hide window
@@ -86,14 +90,16 @@ namespace ValthrunHelper
             CheatUtils.DeleteCheatFiles();
         }
 
-        public static void Log(TextBlock textBlock, string message)
+        public static void Log(string message)
         {
+            if (loggingTextBlock == null) return;
+
             Application.Current.Dispatcher.Invoke(() =>
             {
-                string messages = textBlock.Text;
+                string messages = loggingTextBlock.Text;
                 if (messages.Length > 0) messages += Environment.NewLine;
                 messages += message;
-                textBlock.Text = messages;
+                loggingTextBlock.Text = messages;
             });
         }
 

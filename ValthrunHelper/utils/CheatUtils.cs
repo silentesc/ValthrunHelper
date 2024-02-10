@@ -1,6 +1,5 @@
 ﻿using System.Diagnostics;
 using System.IO;
-using System.Windows.Controls;
 
 namespace ValthrunHelper.utils
 {
@@ -20,7 +19,7 @@ namespace ValthrunHelper.utils
         private static readonly string vulkan1URL = "https://github.com/silentesc/ValthrunHelperFiles/releases/latest/download/vulkan-1.dll";
         private static readonly string configURL = "https://github.com/silentesc/ValthrunHelperFiles/releases/latest/download/config.yaml";
 
-        public static void WaitForAntiCheatClosing(TextBlock outputTextBlock, string[] antiCheatProcesses)
+        public static void WaitForAntiCheatClosing(string[] antiCheatProcesses)
         {
             // Check for AntiCheat Processes and warn user if so
             bool alreadyLogged = false;
@@ -34,8 +33,8 @@ namespace ValthrunHelper.utils
                 if (!alreadyLogged)
                 {
                     alreadyLogged = true;
-                    MainWindow.Log(outputTextBlock, "The following processes have to be closed to start the cheat:");
-                    MainWindow.Log(outputTextBlock, string.Join(", ", foundAntiCheatProcesses));
+                    MainWindow.Log("The following processes have to be closed to start the cheat:");
+                    MainWindow.Log(string.Join(", ", foundAntiCheatProcesses));
                 }
                 foundAntiCheatProcesses.Clear();
 
@@ -44,7 +43,7 @@ namespace ValthrunHelper.utils
             }
         }
 
-        public static async Task CheckOrDownloadFilesAsync(TextBlock outputTextBlock)
+        public static async Task CheckOrDownloadFilesAsync()
         {
             if (!Directory.Exists(filesPath))
             {
@@ -54,36 +53,36 @@ namespace ValthrunHelper.utils
             // Download kdmapper.exe if doesn't exist
             if (!File.Exists(kdmapperPath))
             {
-                MainWindow.Log(outputTextBlock, "Downloading kdmapper.exe");
-                await FileUtils.DownloadFileAsync(outputTextBlock, kdmapperURL, kdmapperPath);
+                MainWindow.Log("Downloading kdmapper.exe");
+                await FileUtils.DownloadFileAsync(kdmapperURL, kdmapperPath);
             }
 
             // Download controller.exe if doesn't exist
             if (!File.Exists(controllerPath))
             {
-                MainWindow.Log(outputTextBlock, "Downloading controller.exe");
-                await FileUtils.DownloadFileAsync(outputTextBlock, controllerURL, controllerPath);
+                MainWindow.Log("Downloading controller.exe");
+                await FileUtils.DownloadFileAsync(controllerURL, controllerPath);
             }
 
             // Download valthrun-driver.sys if doesn't exist
             if (!File.Exists(valthrunDriverPath))
             {
-                MainWindow.Log(outputTextBlock, "Downloading valthrun-driver.sys");
-                await FileUtils.DownloadFileAsync(outputTextBlock, valthrunDriverURL, valthrunDriverPath);
+                MainWindow.Log("Downloading valthrun-driver.sys");
+                await FileUtils.DownloadFileAsync(valthrunDriverURL, valthrunDriverPath);
             }
 
             // Download vulkan-1.dll if doesn't exist
             if (!File.Exists(vulkan1Path))
             {
-                MainWindow.Log(outputTextBlock, "Downloading vulkan-1.dll");
-                await FileUtils.DownloadFileAsync(outputTextBlock, vulkan1URL, vulkan1Path);
+                MainWindow.Log("Downloading vulkan-1.dll");
+                await FileUtils.DownloadFileAsync(vulkan1URL, vulkan1Path);
             }
 
             // Download config.yaml if doesn't exist
             if (!File.Exists(configPath))
             {
-                MainWindow.Log(outputTextBlock, "Downloading config.yaml");
-                await FileUtils.DownloadFileAsync(outputTextBlock, configURL, configPath);
+                MainWindow.Log("Downloading config.yaml");
+                await FileUtils.DownloadFileAsync(configURL, configPath);
             }
         }
 
