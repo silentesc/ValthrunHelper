@@ -80,6 +80,8 @@ namespace ValthrunHelper
 
             // Wait until cs2 closes
             cs2Process.WaitForExit();
+
+            // Show restart window
             Application.Current.Dispatcher.Invoke(() =>
             {
                 new RestartInfoWindow().Show();
