@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Net.Http;
 using System.Reflection;
@@ -11,6 +12,7 @@ namespace ValthrunHelper.utils
     {
         private static readonly string apiUrl = "https://api.github.com/repos/silentesc/ValthrunHelper/releases/latest";
         private static readonly string valthrunHelperUrl = "https://github.com/silentesc/ValthrunHelper/releases/latest/download/ValthrunHelper.exe";
+        private static string? lastCheckedRepoVersion = null;
 
         public static async Task<bool> UpdateAvailableAsync(TextBlock textBlock)
         {
@@ -37,8 +39,9 @@ namespace ValthrunHelper.utils
         {
             try
             {
-                // Get repo version
-                string? repoVersion = await GetRepoVersion();
+                // Try to get last repo version to not make a request to github again
+                // If null, get repo version from github
+                string? repoVersion = lastCheckedRepoVersion ?? await GetRepoVersion();
                 if (repoVersion == null)
                 {
                     MainWindow.Log(textBlock, "Update failed - repoVersion is null");
@@ -62,17 +65,28 @@ namespace ValthrunHelper.utils
 
         public static void DeleteOldFiles(TextBlock textBlock)
         {
-            int currentProcessId = Environment.ProcessId;
+            // Get current process and filename of current process
+            Process currentProcess = Process.GetCurrentProcess();
+            ProcessModule? currentProcessModule = currentProcess.MainModule;
+            if (currentProcessModule == null) return;
+            string currentProcessFileName = currentProcessModule.FileName;
+
+            // Get processes knowns as ValthrunHelper
             Process[] valthrunHelperProcesses = Process.GetProcessesByName("ValthrunHelper");
 
+            // Handle each found ValthrunHelper process
             foreach (Process process in valthrunHelperProcesses)
             {
                 // Continue if process is current process
-                if (process.Id == currentProcessId) continue;
+                if (process.Id == currentProcess.Id) continue;
 
                 // Get process file
                 ProcessModule? module = process.MainModule;
                 if (module == null) continue;
+                string fileName = module.FileName;
+
+                // Continue if file is the same as current file
+                if (currentProcessFileName == fileName) continue;
 
                 // Kill process
                 process.Kill();
@@ -83,7 +97,7 @@ namespace ValthrunHelper.utils
                 // Try to delete the file if exists
                 try
                 {
-                    if (File.Exists(module.FileName)) File.Delete(module.FileName);
+                    if (File.Exists(fileName)) File.Delete(fileName);
 
                 }
                 catch (Exception e)
@@ -109,21 +123,31 @@ namespace ValthrunHelper.utils
 
         private static async Task<string?> GetRepoVersion()
         {
+            // Create client
             HttpClient httpClient = new();
             httpClient.DefaultRequestHeaders.UserAgent.ParseAdd("C# Auto Updater");
 
+            // Send request and get response
             HttpResponseMessage response = await httpClient.GetAsync(apiUrl);
 
+            // Check for unsuccessful status code
             if (!response.IsSuccessStatusCode)
             {
                 return null;
             }
 
+            // Read response to json
             string responseBody = await response.Content.ReadAsStringAsync();
             GitHubRelease? responseJson = JsonSerializer.Deserialize<GitHubRelease>(responseBody);
             if (responseJson == null) return null;
 
-            return responseJson.tag_name;
+            // Get tag from responseJson
+            string? repoVersion = responseJson.tag_name;
+
+            // Set lastCheckedRepoVersion to received repoVersion (might be null)
+            lastCheckedRepoVersion = repoVersion;
+
+            return repoVersion;
         }
         private class GitHubRelease
         {

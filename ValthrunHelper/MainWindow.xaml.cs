@@ -41,9 +41,6 @@ namespace ValthrunHelper
             string cs2ProcessName = "cs2";
             Process cs2Process;
 
-            // Check for old Valthrun processes to kill
-            Updater.DeleteOldFiles(textBlock);
-
             // Check for update
             if (await Updater.UpdateAvailableAsync(textBlock))
             {
@@ -51,6 +48,9 @@ namespace ValthrunHelper
                 Log(textBlock, "Downloaded update, waiting for being deleted.");
                 return;
             }
+
+            // Check for old Valthrun processes to kill
+            Updater.DeleteOldFiles(textBlock);
 
             // Wait for AntiCheat closing
             CheatUtils.WaitForAntiCheatClosing(textBlock, antiCheatProcesses);
