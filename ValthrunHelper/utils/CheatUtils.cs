@@ -50,40 +50,45 @@ namespace ValthrunHelper.utils
                 Directory.CreateDirectory(filesPath);
             }
 
+            List<Task> downloadTasks = [];
+
             // Download kdmapper.exe if doesn't exist
             if (!File.Exists(kdmapperPath))
             {
                 MainWindow.Log("Downloading kdmapper.exe");
-                await FileUtils.DownloadFileAsync(kdmapperURL, kdmapperPath);
+                downloadTasks.Add(FileUtils.DownloadFileAsync(kdmapperURL, kdmapperPath));
             }
 
             // Download controller.exe if doesn't exist
             if (!File.Exists(controllerPath))
             {
                 MainWindow.Log("Downloading controller.exe");
-                await FileUtils.DownloadFileAsync(controllerURL, controllerPath);
+                downloadTasks.Add(FileUtils.DownloadFileAsync(controllerURL, controllerPath));
             }
 
             // Download valthrun-driver.sys if doesn't exist
             if (!File.Exists(valthrunDriverPath))
             {
                 MainWindow.Log("Downloading valthrun-driver.sys");
-                await FileUtils.DownloadFileAsync(valthrunDriverURL, valthrunDriverPath);
+                downloadTasks.Add(FileUtils.DownloadFileAsync(valthrunDriverURL, valthrunDriverPath));
             }
 
             // Download vulkan-1.dll if doesn't exist
             if (!File.Exists(vulkan1Path))
             {
                 MainWindow.Log("Downloading vulkan-1.dll");
-                await FileUtils.DownloadFileAsync(vulkan1URL, vulkan1Path);
+                downloadTasks.Add(FileUtils.DownloadFileAsync(vulkan1URL, vulkan1Path));
             }
 
             // Download config.yaml if doesn't exist
             if (!File.Exists(configPath))
             {
                 MainWindow.Log("Downloading config.yaml");
-                await FileUtils.DownloadFileAsync(configURL, configPath);
+                downloadTasks.Add(FileUtils.DownloadFileAsync(configURL, configPath));
             }
+
+            // Wait for all downloads to finish
+            await Task.WhenAll(downloadTasks);
         }
 
         public static Process WaitForCs2Process(string cs2ProcessName)
