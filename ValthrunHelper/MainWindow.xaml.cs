@@ -70,7 +70,17 @@ namespace ValthrunHelper
 
             // Start cheat
             Log("Starting cheat");
-            Process controllerProcess = CheatUtils.StartCheat();
+            Process controllerProcess;
+            if (CheatUtils.CheatWasAlreadyStartedOnce())
+            {
+                controllerProcess = CheatUtils.StartCheat(false);
+                Application.Current.Dispatcher.Invoke(Application.Current.Shutdown);
+                return;
+            }
+            else
+            {
+                controllerProcess = CheatUtils.StartCheat(true);
+            }
 
             // Hide window
             Application.Current.Dispatcher.Invoke(() =>

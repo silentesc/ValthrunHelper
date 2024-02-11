@@ -116,22 +116,62 @@ namespace ValthrunHelper.utils
             }
         }
 
-        public static Process StartCheat()
+        // Checks if ValthrunHelper is running without window as the same file as current process
+        // Checking for the driver isn't possible because of random driver name
+        public static bool CheatWasAlreadyStartedOnce()
         {
-            // Loading driver
-            ProcessStartInfo driverProcessStartInfo = new()
-            {
-                FileName = kdmapperPath,
-                Arguments = valthrunDriverPath,
-                Verb = "runas",
-                UseShellExecute = true
-            };
-            Process driverProcess = new() { StartInfo = driverProcessStartInfo };
-            driverProcess.Start();
-            driverProcess.WaitForExit();
+            // Get current process and filename of current process
+            Process currentProcess = Process.GetCurrentProcess();
+            ProcessModule? currentProcessModule = currentProcess.MainModule;
+            if (currentProcessModule == null) return false;
+            string currentProcessFileName = currentProcessModule.FileName;
 
-            // Wait before starting controller
-            Thread.Sleep(1000);
+            // Get processes knowns as ValthrunHelper
+            Process[] valthrunHelperProcesses = Process.GetProcessesByName("ValthrunHelper");
+
+            // Handle each found ValthrunHelper process
+            foreach (Process process in valthrunHelperProcesses)
+            {
+                // Continue if process is current process
+                if (process.Id == currentProcess.Id) continue;
+
+                // Get process file
+                ProcessModule? module = process.MainModule;
+                if (module == null) continue;
+                string fileName = module.FileName;
+
+                // Continue if file is not the same as current file
+                // This should only happen if killing and deleting the file previously after updating failed
+                if (currentProcessFileName != fileName) continue;
+
+                // Continue if process has window
+                if (process.MainWindowHandle != IntPtr.Zero) continue;
+
+                return true;
+            }
+
+            return false;
+        }
+
+        public static Process StartCheat(bool runDriver)
+        {
+            if (runDriver)
+            {
+                // Loading driver
+                ProcessStartInfo driverProcessStartInfo = new()
+                {
+                    FileName = kdmapperPath,
+                    Arguments = valthrunDriverPath,
+                    Verb = "runas",
+                    UseShellExecute = true
+                };
+                Process driverProcess = new() { StartInfo = driverProcessStartInfo };
+                driverProcess.Start();
+                driverProcess.WaitForExit();
+
+                // Wait before starting controller
+                Thread.Sleep(1000);
+            }
 
             // Load controller
             ProcessStartInfo controllerProcessStartInfo = new()
