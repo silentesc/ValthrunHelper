@@ -69,7 +69,45 @@ namespace ValthrunHelper.utils
             if (currentProcessModule == null) return;
             string currentProcessFileName = currentProcessModule.FileName;
 
-            // Get processes knowns as ValthrunHelper
+            // Get running processes
+            Process[] processes = Process.GetProcesses();
+
+            foreach (Process process in processes)
+            {
+                // Continue if process is current process
+                if (process.Id == currentProcess.Id) continue;
+
+                // Check Window title
+                string windowTitle = process.MainWindowTitle;
+                if (windowTitle != "Valthrun Helper") continue;
+
+                // Get process file
+                ProcessModule? module = process.MainModule;
+                if (module == null) continue;
+                string fileName = module.FileName;
+
+                // Continue if file is the same as current file
+                if (currentProcessFileName == fileName) continue;
+
+                // Kill process
+                process.Kill();
+
+                // Wait for process to be killed
+                Thread.Sleep(100);
+
+                // Try to delete the file if exists
+                try
+                {
+                    if (File.Exists(fileName)) File.Delete(fileName);
+
+                }
+                catch (Exception e)
+                {
+                    MainWindow.Log("Error while deleting old file " + e);
+                }
+            }
+
+            // Get processes known as ValthrunHelper
             Process[] valthrunHelperProcesses = Process.GetProcessesByName("ValthrunHelper");
 
             // Handle each found ValthrunHelper process
