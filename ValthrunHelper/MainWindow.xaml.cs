@@ -61,6 +61,9 @@ namespace ValthrunHelper
             // Wait for AntiCheat closing
             CheatUtils.WaitForAntiCheatClosing(antiCheatProcesses);
 
+            // Check if controller.exe already exists
+            bool controllerExistsBeforeDownload = CheatUtils.ControllerExists();
+
             // Download files if they don't exist
             await CheatUtils.CheckOrDownloadFilesAsync();
 
@@ -70,7 +73,7 @@ namespace ValthrunHelper
 
             // Start cheat
             Log("Starting cheat");
-            Process controllerProcess = CheatUtils.StartCheat();
+            Process controllerProcess = CheatUtils.StartCheat(controllerExistsBeforeDownload);
 
             // Hide window
             Application.Current.Dispatcher.Invoke(() =>

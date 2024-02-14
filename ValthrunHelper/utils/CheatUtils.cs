@@ -43,6 +43,11 @@ namespace ValthrunHelper.utils
             }
         }
 
+        public static bool ControllerExists()
+        {
+            return File.Exists(controllerPath);
+        }
+
         public static async Task CheckOrDownloadFilesAsync()
         {
             if (!Directory.Exists(filesPath))
@@ -116,22 +121,26 @@ namespace ValthrunHelper.utils
             }
         }
 
-        public static Process StartCheat()
+        public static Process StartCheat(bool controllerExistsBeforeDownload)
         {
-            // Loading driver
-            ProcessStartInfo driverProcessStartInfo = new()
+            // Only load driver if controller.exe doesn't exist
+            if (!controllerExistsBeforeDownload)
             {
-                FileName = kdmapperPath,
-                Arguments = valthrunDriverPath,
-                Verb = "runas",
-                UseShellExecute = true
-            };
-            Process driverProcess = new() { StartInfo = driverProcessStartInfo };
-            driverProcess.Start();
-            driverProcess.WaitForExit();
+                // Loading driver
+                ProcessStartInfo driverProcessStartInfo = new()
+                {
+                    FileName = kdmapperPath,
+                    Arguments = valthrunDriverPath,
+                    Verb = "runas",
+                    UseShellExecute = true
+                };
+                Process driverProcess = new() { StartInfo = driverProcessStartInfo };
+                driverProcess.Start();
+                driverProcess.WaitForExit();
 
-            // Wait before starting controller
-            Thread.Sleep(1000);
+                // Wait before starting controller
+                Thread.Sleep(1000);
+            }
 
             // Load controller
             ProcessStartInfo controllerProcessStartInfo = new()
