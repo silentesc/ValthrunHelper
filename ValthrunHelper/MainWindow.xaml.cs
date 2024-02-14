@@ -75,6 +75,13 @@ namespace ValthrunHelper
             Log("Starting cheat");
             Process controllerProcess = CheatUtils.StartCheat(controllerExistsBeforeDownload);
 
+            // Exit app if another app is still running
+            if (App.AnotherAppStillRunning())
+            {
+                Application.Current.Shutdown();
+                return;
+            }
+
             // Hide window
             Application.Current.Dispatcher.Invoke(() =>
             {
