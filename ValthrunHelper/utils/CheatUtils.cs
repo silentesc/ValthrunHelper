@@ -121,10 +121,9 @@ namespace ValthrunHelper.utils
             }
         }
 
-        public static Process StartCheat(bool controllerExistsBeforeDownload)
+        public static Process StartCheat(bool loadDriver)
         {
-            // Only load driver if controller.exe doesn't exist
-            if (!controllerExistsBeforeDownload)
+            if (loadDriver)
             {
                 // Loading driver
                 ProcessStartInfo driverProcessStartInfo = new()

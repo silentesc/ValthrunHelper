@@ -61,8 +61,8 @@ namespace ValthrunHelper
             // Wait for AntiCheat closing
             CheatUtils.WaitForAntiCheatClosing(antiCheatProcesses);
 
-            // Check if controller.exe already exists
-            bool controllerExistsBeforeDownload = CheatUtils.ControllerExists();
+            // Check if controller.exe already exists and if another ValthrunHelper is still running
+            bool loadDriver = !(CheatUtils.ControllerExists() && App.AnotherAppStillRunning());
 
             // Download files if they don't exist
             await CheatUtils.CheckOrDownloadFilesAsync();
@@ -73,7 +73,7 @@ namespace ValthrunHelper
 
             // Start cheat
             Log("Starting cheat");
-            Process controllerProcess = CheatUtils.StartCheat(controllerExistsBeforeDownload);
+            Process controllerProcess = CheatUtils.StartCheat(loadDriver);
 
             // Exit app if another app is still running
             if (App.AnotherAppStillRunning())
