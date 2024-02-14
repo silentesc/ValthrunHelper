@@ -9,11 +9,11 @@ namespace ValthrunHelper
 
         protected override void OnStartup(StartupEventArgs e)
         {
-            const string mutexName = "YourUniqueMutexName"; // Choose a unique name for your mutex
+            const string appMutexName = "ValthrunHelper";
 
-            mutex = new Mutex(true, mutexName, out bool createdNew);
+            mutex = new Mutex(true, appMutexName, out bool createdNewAppMutex);
 
-            if (!createdNew)
+            if (!createdNewAppMutex)
             {
                 anotherAppStillRunning = true;
             }
