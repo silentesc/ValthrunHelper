@@ -106,41 +106,6 @@ namespace ValthrunHelper.utils
                     MainWindow.Log("Error while deleting old file " + e);
                 }
             }
-
-            // Get processes known as ValthrunHelper
-            Process[] valthrunHelperProcesses = Process.GetProcessesByName("ValthrunHelper");
-
-            // Handle each found ValthrunHelper process
-            foreach (Process process in valthrunHelperProcesses)
-            {
-                // Continue if process is current process
-                if (process.Id == currentProcess.Id) continue;
-
-                // Get process file
-                ProcessModule? module = process.MainModule;
-                if (module == null) continue;
-                string fileName = module.FileName;
-
-                // Continue if file is the same as current file
-                if (currentProcessFileName == fileName) continue;
-
-                // Kill process
-                process.Kill();
-
-                // Wait for process to be killed
-                Thread.Sleep(100);
-
-                // Try to delete the file if exists
-                try
-                {
-                    if (File.Exists(fileName)) File.Delete(fileName);
-
-                }
-                catch (Exception e)
-                {
-                    MainWindow.Log("Error while deleting old file " + e);
-                }
-            }
         }
 
         /*
@@ -161,7 +126,7 @@ namespace ValthrunHelper.utils
         {
             // Create client
             HttpClient httpClient = new();
-            httpClient.DefaultRequestHeaders.UserAgent.ParseAdd("C# Auto Updater");
+            httpClient.DefaultRequestHeaders.UserAgent.ParseAdd("ValthrunHelper");
 
             // Send request and get response
             HttpResponseMessage response = await httpClient.GetAsync(apiUrl);

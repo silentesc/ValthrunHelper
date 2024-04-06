@@ -13,9 +13,10 @@ namespace ValthrunHelper.utils
         private static readonly string vulkan1Path = string.Format("{0}\\{1}", filesPath, "vulkan-1.dll");
         private static readonly string configPath = string.Format("{0}\\{1}", filesPath, "config.yaml");
 
+        private static readonly string baseUrl = "https://github.com/Valthrun/Valthrun/releases/latest/download/";
+
         private static readonly string kdmapperURL = "https://github.com/valthrunner/Valthrun/releases/latest/download/kdmapper.exe";
-        private static readonly string controllerURL = "https://github.com/Valthrun/Valthrun/releases/latest/download/controller.exe";
-        private static readonly string valthrunDriverURL = "https://github.com/Valthrun/Valthrun/releases/latest/download/valthrun-driver.sys";
+        private static readonly string valthrunDriverURL = $"{baseUrl}valthrun-driver.sys";
         private static readonly string vulkan1URL = "https://github.com/silentesc/ValthrunHelperFiles/releases/latest/download/vulkan-1.dll";
         private static readonly string configURL = "https://github.com/silentesc/ValthrunHelperFiles/releases/latest/download/config.yaml";
 
@@ -68,7 +69,7 @@ namespace ValthrunHelper.utils
             if (!File.Exists(controllerPath))
             {
                 MainWindow.Log("Downloading controller.exe");
-                downloadTasks.Add(FileUtils.DownloadFileAsync(controllerURL, controllerPath));
+                downloadTasks.Add(FileUtils.DownloadController(baseUrl, controllerPath));
             }
 
             // Download valthrun-driver.sys if doesn't exist
